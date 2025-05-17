@@ -1,42 +1,48 @@
-import requests
-import os
-from datetime import datetime
-from HarvestSDK import HarvestSDK
-from dotenv import load_dotenv
-from config.harvest_config import timesheet_entries_for_a_day
+import argparse
+from harvest_agent import HarvestAgent
+from datetime import datetime, timedelta
 
-load_dotenv()
+def parse_args():
+    parser = argparse.ArgumentParser(description="Harvest Timesheet Automation")
+    parser.add_argument('--date', type=str, help="A single date (DD/MM/YYYY)")
+    parser.add_argument('--start', type=str, help="Start date for range (DD/MM/YYYY)")
+    parser.add_argument('--end', type=str, help="End date for range (DD/MM/YYYY)")
+    parser.add_argument('--delete', action='store_true', help="Delete all time entries for the selected dates")
+    parser.add_argument('--show', action='store_true', help="Show all time entries for the selected dates")
+    return parser.parse_args()
 
-def fill_timesheet(date_str, account_id, access_token):
-    # Convert date string to required format (YYYY-MM-DD)
-    date_obj = datetime.strptime(date_str, "%d/%m/%Y")
-    spent_date = date_obj.strftime("%Y-%m-%d")
-    
-    # Initialize Harvest client
-    harvest = HarvestSDK(account_id, access_token)
-    
-    for entry in timesheet_entries_for_a_day:
-        try:
-            harvest.create_time_entry(
-                project_id=entry['project_id'],
-                task_id=entry['task_id'],
-                spent_date=spent_date,
-                hours=entry['hours'],
-                notes=entry['notes'],
-            )
-            
-            print(f"Created {entry['hours']}h entry for {entry['project_name']} - {entry['task_name']}")
-        except requests.exceptions.RequestException as e:
-            print(f"Error creating time entry: {str(e)}")
+def get_current_week_dates():
+    today = datetime.today()
+    monday = today - timedelta(days=today.weekday())
+    return [monday + timedelta(days=i) for i in range(5)]
 
+def get_date_range(start_str, end_str):
+    start = datetime.strptime(start_str, "%d/%m/%Y")
+    end = datetime.strptime(end_str, "%d/%m/%Y")
+    return [start + timedelta(days=i) for i in range((end - start).days + 1)]
 
 if __name__ == "__main__":
-    HARVEST_ACCOUNT_ID = os.getenv("HARVEST_ACCOUNT_ID")
-    HARVEST_ACCESS_TOKEN = os.getenv("HARVEST_ACCESS_TOKEN")
-    
-    fill_timesheet('07/01/2025', HARVEST_ACCOUNT_ID, HARVEST_ACCESS_TOKEN)
-    
+    args = parse_args()
 
+    harvest_agent = HarvestAgent()
 
+    if args.date:
+        dates = [datetime.strptime(args.date, "%d/%m/%Y")]
+    elif args.start and args.end:
+        dates = get_date_range(args.start, args.end)
+    else:
+        dates = get_current_week_dates()
 
-    
+    if args.show:
+        from_date = args.start if args.start else dates[0].strftime("%d/%m/%Y")
+        to_date = args.end if args.end else dates[-1].strftime("%d/%m/%Y")
+        entries = harvest_agent.sdk.get_time_entries(from_date, to_date)
+        for entry in entries:
+            print(f"Date: {entry['spent_date']}, Project: {entry['project']['name']}, Task: {entry['task']['name']}, Hours: {entry['hours']}, Notes: {entry['notes']}")
+    elif args.delete:
+        from_date = args.start if args.start else dates[0].strftime("%d/%m/%Y")
+        to_date = args.end if args.end else dates[-1].strftime("%d/%m/%Y")
+        harvest_agent.delete_time_entries_for_date(from_date, to_date)
+    else:
+        for date in dates:
+            harvest_agent.fill_timesheet(date.strftime("%d/%m/%Y"))

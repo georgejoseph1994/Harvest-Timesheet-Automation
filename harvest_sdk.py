@@ -1,5 +1,6 @@
 import requests
 import os
+from datetime import datetime
 
 class HarvestSDK:
     def __init__(self, account_id, access_token):
@@ -91,3 +92,25 @@ class HarvestSDK:
         )
         response.raise_for_status()
         return response.json()
+
+    def get_time_entries(self, from_date, to_date):
+        """Fetch all time entries for the given date (DD/MM/YYYY) for the current user."""
+        from_date = datetime.strptime(from_date, "%d/%m/%Y").strftime("%Y-%m-%d")
+        to_date = datetime.strptime(to_date, "%d/%m/%Y").strftime("%Y-%m-%d")
+        user_id = self.get_user_id()
+
+        response = requests.get(
+            f"{self.base_url}/time_entries",
+            headers=self.headers,
+            params={"from": from_date, "to": to_date, "user_id": user_id}
+        )
+        response.raise_for_status()
+        return response.json().get("time_entries", [])
+
+    def delete_time_entry(self, entry_id):
+        """Delete a single time entry by ID."""
+        response = requests.delete(
+            f"{self.base_url}/time_entries/{entry_id}",
+            headers=self.headers
+        )
+        return response
