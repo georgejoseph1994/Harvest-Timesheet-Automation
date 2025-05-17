@@ -1,3 +1,6 @@
 .env
 venv/*
-config/harvest_config.py
+src/config/harvest_config.py
+src/google_calendar/credentials.json
+src/google_calendar/token.json
+__pycache__/
