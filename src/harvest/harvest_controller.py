@@ -1,4 +1,4 @@
-from harvest_sdk import HarvestSDK
+from .harvest_sdk import HarvestSDK
 import requests
 import os
 from datetime import datetime
@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from config.harvest_config import timesheet_entries_for_a_day
 load_dotenv()
 
-class HarvestAgent:
+class HarvestController:
     # constructor
     def __init__(self):
         self.sdk = HarvestSDK(

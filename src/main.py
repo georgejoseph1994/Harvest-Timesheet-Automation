@@ -1,5 +1,5 @@
 import argparse
-from harvest_agent import HarvestAgent
+from harvest.harvest_controller import HarvestController
 from datetime import datetime, timedelta
 
 def parse_args():
@@ -24,7 +24,7 @@ def get_date_range(start_str, end_str):
 if __name__ == "__main__":
     args = parse_args()
 
-    harvest_agent = HarvestAgent()
+    harvest_controller = HarvestController()
 
     if args.date:
         dates = [datetime.strptime(args.date, "%d/%m/%Y")]
@@ -36,13 +36,13 @@ if __name__ == "__main__":
     if args.show:
         from_date = args.start if args.start else dates[0].strftime("%d/%m/%Y")
         to_date = args.end if args.end else dates[-1].strftime("%d/%m/%Y")
-        entries = harvest_agent.sdk.get_time_entries(from_date, to_date)
+        entries = harvest_controller.sdk.get_time_entries(from_date, to_date)
         for entry in entries:
             print(f"Date: {entry['spent_date']}, Project: {entry['project']['name']}, Task: {entry['task']['name']}, Hours: {entry['hours']}, Notes: {entry['notes']}")
     elif args.delete:
         from_date = args.start if args.start else dates[0].strftime("%d/%m/%Y")
         to_date = args.end if args.end else dates[-1].strftime("%d/%m/%Y")
-        harvest_agent.delete_time_entries_for_date(from_date, to_date)
+        harvest_controller.delete_time_entries_for_date(from_date, to_date)
     else:
         for date in dates:
-            harvest_agent.fill_timesheet(date.strftime("%d/%m/%Y"))
+            harvest_controller.fill_timesheet(date.strftime("%d/%m/%Y"))
