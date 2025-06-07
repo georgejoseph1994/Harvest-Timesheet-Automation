@@ -4,8 +4,8 @@ Automate filling your Harvest timesheet
 
 ## Features
 
--   Automatically fills your Harvest timesheet for a given date.
--   Easily configurable with environment variables and a config file.
+-   Bulk fill your Harvest time sheet with pre configured time sheet records.
+-   Auto skip public holidays and weekends when giving date ranges based on your location
 
 ## Setup
 
