@@ -61,20 +61,24 @@ class DateUtils:
         today = datetime.today()
         monday = today - timedelta(days=today.weekday())
         week_dates = [monday + timedelta(days=i) for i in range(5)]
-        workdays = [date for date in week_dates if self.is_workday(date)]
+        workdays = []
 
         if verbose:
-            skipped_dates = [date for date in week_dates if not self.is_workday(date)]
-            if skipped_dates:
-                print("Note: Skipping the following non-workdays in current week:")
-                for date in skipped_dates:
+            print("Checking current week workdays...")
+
+        for date in week_dates:
+            if self.is_workday(date):
+                workdays.append(date)
+                if verbose:
+                    print(f"✓ {date.strftime('%d/%m/%Y')} ({date.strftime('%A')}) - workday")
+            else:
+                if verbose:
                     reasons = []
                     if self.is_holiday(date):
                         holiday_name = self.get_holiday_name(date)
                         reasons.append(f"holiday ({holiday_name})")
                     reason_text = ', '.join(reasons) if reasons else "holiday"
-                    print(f"  {date.strftime('%d/%m/%Y')} ({date.strftime('%A')}) - {reason_text}")
-                print()
+                    print(f"✗ {date.strftime('%d/%m/%Y')} ({date.strftime('%A')}) - skipping ({reason_text})")
 
         return workdays
 
@@ -155,6 +159,56 @@ class DateUtils:
                 print()
 
         return workdays, skipped_dates
+
+    def process_date_range_with_feedback(self, start_str: str, end_str: str, date_format: str = "%d/%m/%Y"):
+        """
+        Process a date range and yield workdays one by one with real-time feedback.
+
+        Args:
+            start_str: Start date as string
+            end_str: End date as string
+            date_format: Date format string (default: "%d/%m/%Y")
+
+        Yields:
+            datetime objects for workdays, with real-time feedback about skipped days
+        """
+        print(f"Processing date range: {start_str} to {end_str}")
+        print("=" * 80)
+
+        start = datetime.strptime(start_str, date_format)
+        end = datetime.strptime(end_str, date_format)
+
+        # Calculate total days in range
+        total_days = (end - start).days + 1
+        all_dates = [start + timedelta(days=i) for i in range(total_days)]
+
+        workday_count = 0
+        processed_count = 0
+
+        for date in all_dates:
+            processed_count += 1
+
+            if self.is_workday(date):
+                workday_count += 1
+                print(f"\n[{workday_count}] Processing workday: {date.strftime('%d/%m/%Y')} ({date.strftime('%A')})")
+                print("-" * 60)
+                yield date
+                print("-" * 60)
+            else:
+                # Provide real-time feedback about skipped days
+                reasons = []
+                if date.weekday() >= 5:
+                    reasons.append("weekend")
+                if self.is_holiday(date):
+                    holiday_name = self.get_holiday_name(date)
+                    reasons.append(f"holiday ({holiday_name})")
+
+                reason_text = ', '.join(reasons)
+                print(f"\n⏭️  Skipping {date.strftime('%d/%m/%Y')} ({date.strftime('%A')}) - {reason_text}")
+
+        print(f"\n{'=' * 80}")
+        print(f"Completed processing {total_days} total days, found {workday_count} workdays")
+        print("=" * 80)
 
 
 # Default instance for Melbourne, Australia
