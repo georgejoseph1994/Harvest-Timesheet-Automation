@@ -1,5 +1,10 @@
 from datetime import date
 
+HOLIDAY_CONFIG = {
+    "country": "AU",  # Australia
+    "state": "VIC"    # Victoria (Melbourne)
+}
+
 timesheet_entries_for_a_day = [
     {
         "project_name": "Product & Development",
