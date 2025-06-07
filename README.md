@@ -45,11 +45,22 @@ Automate filling your Harvest timesheet
         ```
 
 5.  **Configure your timesheet entries:**
-    -   Edit `config/harvest_config.py` to define your daily timesheet entries.
+    -   Copy the example config file:
+        ```sh
+        cp src/config/harvest_config.example.py src/config/harvest_config.py
+        ```
+    -   Edit `src/config/harvest_config.py` to define your daily time sheet entries. For TaskId and Project Id inspect your network request when viewing a filled in harvest page
 
 ## Usage
 
 You can now run the script with flexible date options:
+
+-   **For the current week (Monday to Friday):**
+       If no parameters are provided, the script will fill your timesheet for the current week's Monday to Friday.
+
+    ```sh
+    python main.py
+    ```
 
 -   **For a specific date:**
 
@@ -63,20 +74,5 @@ You can now run the script with flexible date options:
     python main.py --start=12/05/2025 --end=16/05/2025
     ```
 
--   **For the current week (Monday to Friday):**
-    ```sh
-    python main.py
-    ```
-
-If no parameters are provided, the script will fill your timesheet for the current week's Monday to Friday.
-
-### Example
-
-```sh
-python main.py --date=20/05/2025
-python main.py --start=13/05/2025 --end=15/05/2025
-python main.py
-```
-
-**Note:**  
+**Note:**
 Date format should be `DD/MM/YYYY`.
