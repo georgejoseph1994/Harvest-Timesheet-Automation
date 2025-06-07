@@ -1,7 +1,5 @@
 # Harvest Timesheet Automation
 
-Automate filling your Harvest timesheet
-
 ## Features
 
 -   Bulk fill your Harvest time sheet with pre configured time sheet records.
@@ -76,3 +74,33 @@ You can now run the script with flexible date options:
 
 **Note:**
 Date format should be `DD/MM/YYYY`.
+
+## Additional Options
+
+-   **View existing time entries:**
+
+    ```sh
+    python main.py --show --start=12/05/2025 --end=16/05/2025
+    ```
+
+-   **Delete time entries for a date range:**
+
+    ```sh
+    python main.py --delete --start=12/05/2025 --end=16/05/2025
+    ```
+
+## Disclaimer
+
+**⚠️ USE AT YOUR OWN RISK ⚠️**
+
+This software is provided "as is" without warranty of any kind. The authors and contributors are not responsible for any data loss, incorrect time entries, or any other issues that may arise from using this automation tool. 
+
+Please:
+- Test thoroughly with a small date range before using on larger datasets
+- Verify your time entries after running the automation
+- Keep backups of your existing timesheet data
+- Ensure you comply with your organization's policies regarding automated timesheet filling
+
+By using this software, you acknowledge that you understand the risks and agree to use it at your own discretion.
+
+
