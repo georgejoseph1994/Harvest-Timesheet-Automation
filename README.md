@@ -72,11 +72,6 @@ You can now run the script with flexible date options:
     python main.py --start=12/05/2025 --end=16/05/2025
     ```
 
-**Note:**
-Date format should be `DD/MM/YYYY`.
-
-## Additional Options
-
 -   **View existing time entries:**
 
     ```sh
@@ -93,7 +88,7 @@ Date format should be `DD/MM/YYYY`.
 
 **⚠️ USE AT YOUR OWN RISK ⚠️**
 
-This software is provided "as is" without warranty of any kind. The authors and contributors are not responsible for any data loss, incorrect time entries, or any other issues that may arise from using this automation tool. 
+This software is provided "as is" without warranty of any kind. The authors and contributors are not responsible for any data loss, incorrect time entries, or any other issues that may arise from using this automation tool.
 
 Please:
 - Test thoroughly with a small date range before using on larger datasets
