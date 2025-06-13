@@ -13,6 +13,13 @@ def parse_args():
     parser.add_argument('--show', action='store_true', help="Show all time entries for the selected dates")
     return parser.parse_args()
 
+def validate_date_format(date_str, date_format="%d/%m/%Y"):
+    try:
+        datetime.strptime(date_str, date_format)
+    except ValueError:
+        print(f"Error: Invalid date format '{date_str}'. Expected format is DD/MM/YYYY")
+        exit(1)
+
 
 if __name__ == "__main__":
     args = parse_args()
@@ -21,9 +28,12 @@ if __name__ == "__main__":
     date_utils = DateUtils(country=HOLIDAY_CONFIG["country"], state=HOLIDAY_CONFIG["state"])
 
     if args.date:
+        validate_date_format(args.date)
         print(f"Processing single date: {args.date}")
         dates = [datetime.strptime(args.date, "%d/%m/%Y")]
     elif args.start and args.end:
+        validate_date_format(args.start)
+        validate_date_format(args.end)
         # For date ranges, we'll process dates one by one with real-time feedback
         dates = None  # We'll use the generator instead
     else:
